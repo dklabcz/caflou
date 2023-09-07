@@ -1,4 +1,4 @@
-# caflou
+# iDoklad > Caflou invoices exporter
 Invoices from iDoklad.cz by API to XML Caflou
 
 This is a simple PHP program designed for our own conversion needs. Many values are hardcoded in the code, so it is necessary to customize this implementation for your specific requirements.
