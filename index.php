@@ -19,6 +19,7 @@ try {
     $invoices = $iDokladController->getInvoices(1);
     $xmlDom = new DOMDocument('1.0', 'utf-8');
     $xmlInvoices = $xmlDom->createElement('invoices');
+    $totalNumberOfInvoices = 0;
     $totalTotalValue = 0;
     $totalTotalValueItems = 0;
 
@@ -36,6 +37,7 @@ try {
         $invoices = $iDokladController->getInvoices($i);
         $invoicesArray = $invoices->Data->Items;
         for ($j = 0; $j < count($invoicesArray); $j++) {
+            $totalNumberOfInvoices++;
             $xmlOneInvoice = $xmlDom->createElement('invoice');
             $invoiceDocument = $invoicesArray[$j];
             $totalTotalValue = $totalTotalValue + floatval($invoiceDocument->Prices->TotalWithoutVat);
@@ -97,13 +99,11 @@ try {
                     $discountPerc = 0;
                     if (!empty($item->DiscountPercentage) && floatval($item->DiscountPercentage) != 0) {
                         $discountPerc = floatval($item->DiscountPercentage);
-                        echo $discountPerc . '<br>';
                     }
 
                     $unitPrice = $item->Prices->UnitPrice;
                     if ($discountPerc != 0) {
                         $unitPrice = round($unitPrice / 100 * (100 - $discountPerc));
-                        echo '<br>' . $unitPrice . '<br>';
                     }
 
                     $xmlOneItem->appendChild($xmlDom->createElement('name', $item->Name));
@@ -152,15 +152,17 @@ try {
     $xmlDom->appendChild($xmlInvoices);
     $xmlString = $xmlDom->saveXML();
 
-    if (file_exists('test.xml')) {
-        unlink('test.xml');
+    if (file_exists('invoices.xml')) {
+        unlink('invoices.xml');
     }
-    $file = fopen('test.xml', 'w');
+    $file = fopen('invoices.xml', 'w');
     if ($file) {
         fwrite($file, $xmlString);
         fclose($file);
     }
 
+    echo "Total number of invoices: " . $totalNumberOfInvoices;
+    echo '<br>';
     echo $totalTotalValue;
     echo '<br>';
     echo $totalTotalValueItems;
